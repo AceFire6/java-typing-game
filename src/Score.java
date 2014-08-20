@@ -1,45 +1,45 @@
-
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Score {
-    private int missedWords;
-    private int caughtWords;
-    private int gameScore;
+    private AtomicInteger missedWords;
+    private AtomicInteger caughtWords;
+    private AtomicInteger gameScore;
 
-    Score() {
-        missedWords=0;
-        caughtWords=0;
-        gameScore=0;
+    public Score() {
+        missedWords.set(0);
+        caughtWords.set(0);
+        gameScore.set(0);
     }
 
     // all getters and setters must be synchronized
 
-    public int getMissed() {
-        return missedWords;
+    public synchronized int getMissed() {
+        return missedWords.get();
     }
 
-    public int getCaught() {
-        return caughtWords;
+    public synchronized int getCaught() {
+        return caughtWords.get();
     }
 
-    public int getTotal() {
-        return (missedWords+caughtWords);
+    public synchronized int getTotal() {
+        return (missedWords.addAndGet(caughtWords.get()));
     }
 
-    public int getScore() {
+    public synchronized AtomicInteger getScore() {
         return gameScore;
     }
 
-    public void missedWord() {
-        missedWords++;
+    public synchronized void missedWord() {
+        missedWords.incrementAndGet();
     }
-    public void caughtWord(int length) {
-        caughtWords++;
-        gameScore+=length;
+    public synchronized void caughtWord(int length) {
+        caughtWords.getAndIncrement();
+        gameScore.addAndGet(length);
     }
 
-    public void resetScore() {
-        caughtWords=0;
-        missedWords=0;
-        gameScore=0;
+    public synchronized void resetScore() {
+        missedWords.set(0);
+        caughtWords.set(0);
+        gameScore.set(0);
     }
 }
