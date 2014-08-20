@@ -6,9 +6,9 @@ public class Score {
     private AtomicInteger gameScore;
 
     public Score() {
-        missedWords.set(0);
-        caughtWords.set(0);
-        gameScore.set(0);
+        missedWords = new AtomicInteger(0);
+        caughtWords = new AtomicInteger(0);
+        gameScore = new AtomicInteger(0);
     }
 
     // all getters and setters must be synchronized
