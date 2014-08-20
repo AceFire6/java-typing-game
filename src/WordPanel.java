@@ -1,5 +1,3 @@
-
-
 import javax.swing.*;
 import java.awt.*;
 
@@ -28,7 +26,7 @@ public class WordPanel extends JPanel implements Runnable {
 
     }
 
-    WordPanel(WordRecord[] words, int maxY) {
+    public WordPanel(WordRecord[] words, int maxY) {
         this.words=words; //will this work?
         noWords = words.length;
         done=false;
@@ -37,6 +35,11 @@ public class WordPanel extends JPanel implements Runnable {
 
     public void run() {
         //add in code to animate this
+        WordThread[] threadWords = new WordThread[noWords];
+        int index = 0;
+        for (WordRecord word : words) {
+            threadWords[index] = new WordThread(word, this);
+        }
     }
 
 }
