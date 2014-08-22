@@ -81,24 +81,35 @@ public class WordApp {
                 //[snip]
                 if (wordController.ended()) {
                     new Thread(w).start();
+                } else if (wordController.isHalted()) {
+                    wordController.setHalted();
                 }
                 textEntry.requestFocus();  //return focus to the text entry field
             }
         });
-        JButton endB = new JButton("End");
+        JButton haltB = new JButton("Halt");
 
         // add the listener to the jbutton to handle the "pressed" event
-        endB.addActionListener(new ActionListener() {
+        haltB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //[snip]
-                if (!wordController.ended()) {
-                    wordController.endGame();
-                }
+                wordController.setHalted();
+            }
+        });
+
+        JButton quitB = new JButton("Quit");
+
+        // add the listener to the jbutton to handle the "pressed" event
+        quitB.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                //[snip]
+                wordController.quitGame();
             }
         });
 
         b.add(startB);
-        b.add(endB);
+        b.add(haltB);
+        b.add(quitB);
 
         g.add(b);
 

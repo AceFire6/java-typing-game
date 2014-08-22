@@ -11,6 +11,7 @@ public class WordController {
     private JLabel[] labels;
 
     private volatile boolean ended;
+    private volatile boolean halted;
     private int maxWords;
 
 
@@ -21,6 +22,7 @@ public class WordController {
         this.wordThreads = new WordThread[words.length];
         this.maxWords = maxWords;
         ended = true;
+        halted = false;
     }
 
     public synchronized void updateScoreLabels() {
@@ -37,7 +39,7 @@ public class WordController {
                     return 0;
                 }
                 if (o1.getY() > o2.getY()) {
-                    return -1;
+                    return - 1;
                 }
                 return 1;
             }
@@ -104,7 +106,7 @@ public class WordController {
         }
     }
 
-    public void endGame() {
+    public void quitGame() {
         stopGame();
         resetScore();
         panel.repaintOnce();
@@ -124,5 +126,13 @@ public class WordController {
         resetScore();
         refreshGUI();
         panel.repaintOnce();
+    }
+
+    public void setHalted() {
+        halted = !halted;
+    }
+
+    public boolean isHalted() {
+        return halted;
     }
 }

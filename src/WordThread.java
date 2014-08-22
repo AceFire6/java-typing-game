@@ -22,10 +22,13 @@ public class WordThread implements Runnable {
             if (word.missed()) {
                 wordController.missedWord();
                 word.resetWord();
+                wordController.refreshGUI();
+            } else if (wordController.isHalted()) {
+                continue;
             } else {
                 word.drop(1);
+                wordController.refreshGUI();
             }
-            wordController.refreshGUI();
             try {
                 Thread.sleep(word.getSpeed()/15);
             } catch (InterruptedException e) {
