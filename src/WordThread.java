@@ -12,7 +12,7 @@ public class WordThread implements Runnable {
         this.wordController = wordController;
     }
 
-    public void stop() {
+    public synchronized void stop() {
         word.resetWord();
     }
 

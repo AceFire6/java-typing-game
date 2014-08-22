@@ -76,12 +76,12 @@ public class WordController {
 
             resetScore();
             refreshGUI();
+            panel.repaintOnce();
         }
     }
 
-    public void refreshGUI() {
+    public synchronized void refreshGUI() {
         updateScoreLabels();
-        panel.repaint();
     }
 
     public void resetScore() {
@@ -104,7 +104,13 @@ public class WordController {
         }
     }
 
-    public boolean ended() {
+    public void endGame() {
+        stopGame();
+        resetScore();
+        panel.repaintOnce();
+    }
+
+    public synchronized boolean ended() {
         return ended;
     }
 
@@ -117,5 +123,6 @@ public class WordController {
                                              "\nYou missed " + score.getMissed() + " words.");
         resetScore();
         refreshGUI();
+        panel.repaintOnce();
     }
 }

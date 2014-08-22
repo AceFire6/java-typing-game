@@ -92,7 +92,7 @@ public class WordApp {
             public void actionPerformed(ActionEvent e) {
                 //[snip]
                 if (!wordController.ended()) {
-                    wordController.stopGame();
+                    wordController.endGame();
                 }
             }
         });
@@ -107,7 +107,6 @@ public class WordApp {
         frame.setContentPane(g);
         //frame.pack();  // don't do this - packs it into small space
         frame.setVisible(true);
-
 
     }
 

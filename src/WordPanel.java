@@ -37,5 +37,17 @@ public class WordPanel extends JPanel implements Runnable {
     public void run() {
         //add in code to animate this
         wordController.startWords();
+        while (!wordController.ended()) {
+            repaint();
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void repaintOnce() {
+        repaint();
     }
 }
