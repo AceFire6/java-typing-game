@@ -59,7 +59,7 @@ public class WordRecord {
         return y;
     }
 
-    public synchronized int getSpeed() {
+    public int getSpeed() {
         return fallingSpeed;
     }
 
@@ -72,7 +72,7 @@ public class WordRecord {
         setY(0);
     }
 
-    public synchronized void resetWord() {
+    public void resetWord() {
         resetPos();
         text = dict.getNewWord();
         missed = false;
@@ -97,11 +97,11 @@ public class WordRecord {
         fallingSpeed = (int) (Math.random() * (maxWait - minWait) + minWait);
     }
 
-    public synchronized void drop(int inc) {
+    public void drop(int inc) {
         setY(y + inc);
     }
 
-    public synchronized boolean missed() {
+    public boolean missed() {
         return missed;
     }
 

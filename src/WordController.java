@@ -80,7 +80,7 @@ public class WordController {
         }
     }
 
-    public synchronized void refreshGUI() {
+    public void refreshGUI() {
         updateScoreLabels();
     }
 
