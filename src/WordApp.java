@@ -23,6 +23,8 @@ public class WordApp {
     static Score score = new Score();
 
     static WordPanel w;
+    static JLabel[] labels;
+    static WordController wordController;
 
 
     public static void setupGUI(int frameX, int frameY, int yLimit) {
@@ -36,7 +38,8 @@ public class WordApp {
         g.setSize(frameX, frameY);
 
 
-        w = new WordPanel(words, yLimit);
+        w = new WordPanel(words, yLimit, wordController);
+        wordController.addPanel(w);
         w.setSize(frameX, yLimit + 100);
         g.add(w);
 
@@ -46,6 +49,8 @@ public class WordApp {
         JLabel caught = new JLabel("Caught: " + score.getCaught() + "    ");
         JLabel missed = new JLabel("Missed:" + score.getMissed() + "    ");
         JLabel scr = new JLabel("Score:" + score.getScore() + "    ");
+        labels = new JLabel[] {caught, missed, scr};
+        wordController.addLabels(labels);
         txt.add(caught);
         txt.add(missed);
         txt.add(scr);
@@ -56,7 +61,7 @@ public class WordApp {
         textEntry.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 String text = textEntry.getText();
-                //[snip]
+                wordController.checkWord(text);
                 textEntry.setText("");
                 textEntry.requestFocus();
             }
@@ -74,6 +79,10 @@ public class WordApp {
         startB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //[snip]
+                if (done) {
+                    new Thread(w).start();
+                    done = false;
+                }
                 textEntry.requestFocus();  //return focus to the text entry field
             }
         });
@@ -83,6 +92,10 @@ public class WordApp {
         endB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //[snip]
+                if (!done) {
+                    w.stop();
+                    done = true;
+                }
             }
         });
 
@@ -123,7 +136,7 @@ public class WordApp {
     }
 
     public static void main(String[] args) {
-
+        done = true;
         //deal with command line arguments
         totalWords = Integer.parseInt(args[0]);  //total words to fall
         noWords = Integer.parseInt(args[1]); // total words falling at any point
@@ -139,17 +152,15 @@ public class WordApp {
 
         //[snip]
 
-        setupGUI(frameX, frameY, yLimit);
-        //Start WordPanel thread - for redrawing animation
-
         int x_inc = frameX / noWords;
         //initialize shared array of current words
 
         for (int i = 0; i < noWords; i++) {
             words[i] = new WordRecord(dict.getNewWord(), i * x_inc, yLimit);
         }
+        wordController = new WordController(totalWords, score, words);
 
-        w.run();
+        setupGUI(frameX, frameY, yLimit);
+        //Start WordPanel thread - for redrawing animation
     }
-
 }

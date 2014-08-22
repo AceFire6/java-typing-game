@@ -2,10 +2,10 @@ import javax.swing.*;
 import java.awt.*;
 
 public class WordPanel extends JPanel implements Runnable {
-    public static volatile boolean done;
     private WordRecord[] words;
     private int noWords;
     private int maxY;
+    private WordController wordController;
 
 
     public void paintComponent(Graphics g) {
@@ -20,28 +20,27 @@ public class WordPanel extends JPanel implements Runnable {
         //draw the words
         //animation must be added
         for (int i=0;i<noWords;i++){
-            //g.drawString(words[i].getWord(),words[i].getX(),words[i].getY());
-            g.drawString(words[i].getWord(),words[i].getX(),words[i].getY()+20);  //y-offset for skeleton so that you can see the words
+            // Some words stuck out.
+            g.drawString(words[i].getWord(),words[i].getX(),words[i].getY() - 5);
+//            g.drawString(words[i].getWord(),words[i].getX(),words[i].getY()+20);  //y-offset for skeleton so that you can see the words
         }
 
     }
 
-    public WordPanel(WordRecord[] words, int maxY) {
+    public WordPanel(WordRecord[] words, int maxY, WordController wordController) {
         this.words=words; //will this work?
         noWords = words.length;
-        done=false;
         this.maxY=maxY;
+        this.wordController = wordController;
     }
 
     public void run() {
         //add in code to animate this
-        WordThread[] threadWords = new WordThread[noWords];
-        int index = 0;
-        for (WordRecord word : words) {
-            threadWords[index] = new WordThread(word, this);
-        }
+        wordController.resetScore();
+        wordController.startWords();
     }
 
+    public void stop() {
+        wordController.stopGame();
+    }
 }
-
-
