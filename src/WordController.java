@@ -106,7 +106,7 @@ public class WordController {
         }
     }
 
-    public void quitGame() {
+    public void haltGame() {
         stopGame();
         resetScore();
         panel.repaintOnce();

@@ -103,7 +103,7 @@ public class WordApp {
         quitB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //[snip]
-                wordController.quitGame();
+                wordController.haltGame();
             }
         });
 
