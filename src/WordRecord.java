@@ -4,7 +4,6 @@ public class WordRecord {
     private int y;
     private int maxY;
     private boolean missed;
-    private boolean reset;
 
     private int fallingSpeed;
 
@@ -17,7 +16,6 @@ public class WordRecord {
         y = 0;
         maxY = 300;
         missed = false;
-        reset = false;
         setFallingSpeed();
     }
 
@@ -78,14 +76,9 @@ public class WordRecord {
         resetPos();
         text = dict.getNewWord();
         missed = false;
-        reset = true;
         setFallingSpeed();
         //System.out.println(getWord() + " falling speed = " + getSpeed());
 
-    }
-
-    public boolean isReset() {
-        return reset;
     }
 
     public synchronized boolean matchWord(String typedText) {
@@ -99,11 +92,9 @@ public class WordRecord {
     }
 
     public void setFallingSpeed() {
-        int maxWait = 2000;
+        int maxWait = 600;
         int minWait = 200;
-//        System.out.println("BEFORE: " + fallingSpeed);
         fallingSpeed = (int) (Math.random() * (maxWait - minWait) + minWait);
-//        System.out.println("AFTER: " + fallingSpeed);
     }
 
     public synchronized void drop(int inc) {

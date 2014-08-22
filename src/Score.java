@@ -25,8 +25,8 @@ public class Score {
         return (missedWords.addAndGet(caughtWords.get()));
     }
 
-    public synchronized AtomicInteger getScore() {
-        return gameScore;
+    public synchronized int getScore() {
+        return gameScore.get();
     }
 
     public synchronized void missedWord() {

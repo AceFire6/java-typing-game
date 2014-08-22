@@ -10,9 +10,8 @@ public class WordController {
     private WordRecord[] words;
     private JLabel[] labels;
 
-    private boolean ended;
+    private volatile boolean ended;
     private int maxWords;
-    private int wordsDone;
 
 
     public WordController(int maxWords, Score score, WordRecord[] words) {
@@ -21,16 +20,16 @@ public class WordController {
         this.words = words;
         this.wordThreads = new WordThread[words.length];
         this.maxWords = maxWords;
-        wordsDone = 0;
+        ended = true;
     }
 
-    public void updateScoreLabels() {
+    public synchronized void updateScoreLabels() {
         labels[0].setText("Caught: " + score.getCaught() + "    ");
         labels[1].setText("Missed:" + score.getMissed() + "    ");
         labels[2].setText("Score:" + score.getScore() + "    ");
     }
 
-    public void checkWord(String text) {
+    public synchronized void checkWord(String text) {
         Arrays.sort(words, new Comparator<WordRecord>() {
             @Override
             public int compare(WordRecord o1, WordRecord o2) {
@@ -47,11 +46,10 @@ public class WordController {
         for (WordRecord word : words) {
             if (word.matchWord(text)) {
                 score.caughtWord(text.length());
-                wordsDone++;
                 break;
             }
         }
-        if (wordsDone >= maxWords) {
+        if (score.getCaught() >= maxWords) {
             winGame();
         }
     }
@@ -66,11 +64,18 @@ public class WordController {
         }
     }
 
-    public void missedWord() {
+    public synchronized void missedWord() {
         score.missedWord();
-        wordsDone++;
-        if ((score.getMissed() > 10) || (wordsDone >= maxWords)) {
+        if (score.getMissed() >= 10) {
             stopGame();
+            refreshGUI();
+            JOptionPane.showMessageDialog(panel, "Game Over!\n" +
+                                                 "Your score was: " + score.getScore() +
+                                                 "\nYou caught " + score.getCaught() + " words." +
+                                                 "\nYou missed " + score.getMissed() + " words.");
+
+            resetScore();
+            refreshGUI();
         }
     }
 
@@ -96,9 +101,7 @@ public class WordController {
         for (WordThread wordThread : wordThreads) {
             wordThread.stop();
             ended = true;
-            wordsDone = 0;
         }
-        refreshGUI();
     }
 
     public boolean ended() {
@@ -107,6 +110,12 @@ public class WordController {
 
     public void winGame() {
         stopGame();
-        JOptionPane.showMessageDialog(panel, "You've won!");
+        refreshGUI();
+        JOptionPane.showMessageDialog(panel, "You've won!\n" +
+                                             "Your score was: " + score.getScore() +
+                                             "\nYou caught " + score.getCaught() + " words." +
+                                             "\nYou missed " + score.getMissed() + " words.");
+        resetScore();
+        refreshGUI();
     }
 }

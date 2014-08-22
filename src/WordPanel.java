@@ -36,11 +36,6 @@ public class WordPanel extends JPanel implements Runnable {
 
     public void run() {
         //add in code to animate this
-        wordController.resetScore();
         wordController.startWords();
-    }
-
-    public void stop() {
-        wordController.stopGame();
     }
 }

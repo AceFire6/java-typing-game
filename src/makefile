@@ -27,3 +27,6 @@ clean:
 	
 run:
 	java $(MAIN_CLASS) $(TOTAL_WORDS) $(CONCURRENT_WORDS) ../$(DICT_FILE)
+
+run-default:
+	java $(MAIN_CLASS) $(TOTAL_WORDS) $(CONCURRENT_WORDS) None

@@ -79,9 +79,8 @@ public class WordApp {
         startB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //[snip]
-                if (done) {
+                if (wordController.ended()) {
                     new Thread(w).start();
-                    done = false;
                 }
                 textEntry.requestFocus();  //return focus to the text entry field
             }
@@ -92,9 +91,8 @@ public class WordApp {
         endB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //[snip]
-                if (!done) {
-                    w.stop();
-                    done = true;
+                if (!wordController.ended()) {
+                    wordController.stopGame();
                 }
             }
         });
