@@ -2,7 +2,10 @@ import javax.swing.*;
 import java.util.Arrays;
 import java.util.Comparator;
 
-
+/**
+ * Name: Jethro Muller
+ * Student Number: MLLJET001
+ */
 public class WordController {
     private Score score;
     private WordPanel panel;
@@ -10,11 +13,35 @@ public class WordController {
     private WordRecord[] words;
     private JLabel[] labels;
 
+    /**
+     * Whether or not the game has finished.
+     */
     private volatile boolean ended;
-    private volatile boolean halted;
+    /**
+     * Whether or not the game is paused.
+     */
+    private volatile boolean paused;
+    /**
+     * Whether or not there has been a change.
+     */
+    private volatile boolean changed;
+    /**
+     * Whether or not the game is running.
+     */
+    private volatile boolean running;
+    /**
+     * The maximum number of words allowed to fall.
+     */
     private int maxWords;
 
 
+    /**
+     * Parametrized constructor
+     *
+     * @param maxWords The maximum number of words allowed to fall.
+     * @param score    The score object that keeps the scores.
+     * @param words    WordRecord[] that holds all the words on screen.
+     */
     public WordController(int maxWords, Score score, WordRecord[] words) {
         super();
         this.score = score;
@@ -22,16 +49,28 @@ public class WordController {
         this.wordThreads = new WordThread[words.length];
         this.maxWords = maxWords;
         ended = true;
-        halted = false;
+        paused = false;
+        running = false;
     }
 
+    /**
+     * Updates the score labels on the WordPanel with the updated scores.
+     */
     public synchronized void updateScoreLabels() {
         labels[0].setText("Caught: " + score.getCaught() + "    ");
         labels[1].setText("Missed:" + score.getMissed() + "    ");
         labels[2].setText("Score:" + score.getScore() + "    ");
+        labels[3].setText("Incorrect Words:" + score.getIncorrectWords() + "    ");
+        setChanged();
     }
 
-    public synchronized void checkWord(String text) {
+    /**
+     * Checks the word to see if it matches the provided text.
+     *
+     * @param text The text to check against.
+     * @return boolean Whether or not the word matched.
+     */
+    public synchronized boolean checkWord(String text) {
         Arrays.sort(words, new Comparator<WordRecord>() {
             @Override
             public int compare(WordRecord o1, WordRecord o2) {
@@ -39,7 +78,7 @@ public class WordController {
                     return 0;
                 }
                 if (o1.getY() > o2.getY()) {
-                    return - 1;
+                    return -1;
                 }
                 return 1;
             }
@@ -48,16 +87,22 @@ public class WordController {
         for (WordRecord word : words) {
             if (word.matchWord(text)) {
                 score.caughtWord(text.length());
-                break;
+                updateScoreLabels();
+                if (score.getCaught() >= maxWords) {
+                    winGame();
+                }
+                return true;
             }
         }
-        if (score.getCaught() >= maxWords) {
-            winGame();
-        }
+        return false;
     }
 
+    /**
+     * Creates WordThread objects to manipulate the WordRecords in separate threads.
+     */
     public void startWords() {
         ended = false;
+        running = true;
         int index = 0;
         for (WordRecord word : words) {
             wordThreads[index] = new WordThread(word, this);
@@ -66,73 +111,136 @@ public class WordController {
         }
     }
 
+    /**
+     * Increments the missed word count and detects if it's gone over the limit.
+     */
     public synchronized void missedWord() {
         score.missedWord();
+        updateScoreLabels();
         if (score.getMissed() >= 10) {
             stopGame();
-            refreshGUI();
+            setChanged();
             JOptionPane.showMessageDialog(panel, "Game Over!\n" +
                                                  "Your score was: " + score.getScore() +
-                                                 "\nYou caught " + score.getCaught() + " words." +
-                                                 "\nYou missed " + score.getMissed() + " words.");
+                                                 "\nYou caught " + score.getCaught() + " word(s)." +
+                                                 "\nYou missed " + score.getMissed() + " word(s)." +
+                                                 "\nYou typed " + score.getIncorrectWords() +
+                                                 " word(s) incorrectly");
 
             resetScore();
-            refreshGUI();
             panel.repaintOnce();
         }
     }
 
-    public void refreshGUI() {
-        updateScoreLabels();
-    }
-
+    /**
+     * Resets the scores in the Score object.
+     */
     public void resetScore() {
         score.resetScore();
         updateScoreLabels();
     }
 
+    /**
+     * Adds the JLabel objects to this.
+     *
+     * @param labels The JLabels to be added to this.
+     */
     public void addLabels(JLabel[] labels) {
         this.labels = labels;
     }
 
+    /**
+     * Adds the JPanel to this.
+     *
+     * @param panel JPanel to be added to this.
+     */
     public void addPanel(WordPanel panel) {
         this.panel = panel;
     }
 
+    /**
+     * Stops the game. Stops all threads and sets the appropriate flags.
+     */
     public void stopGame() {
         for (WordThread wordThread : wordThreads) {
             wordThread.stop();
-            ended = true;
         }
+        ended = true;
+        running = false;
     }
 
-    public void haltGame() {
+    /**
+     * Ends the game. By stopping the game, reseting the score and reseting the display.
+     */
+    public void endGame() {
         stopGame();
         resetScore();
         panel.repaintOnce();
     }
 
-    public synchronized boolean ended() {
+    /**
+     * @return boolean indicating whether or not the game has ended.
+     */
+    public boolean ended() {
         return ended;
     }
 
+    /**
+     * Runs if the win condition is met.
+     * Stops the game and displays a message.
+     */
     public void winGame() {
         stopGame();
-        refreshGUI();
+        setChanged();
         JOptionPane.showMessageDialog(panel, "You've won!\n" +
                                              "Your score was: " + score.getScore() +
-                                             "\nYou caught " + score.getCaught() + " words." +
-                                             "\nYou missed " + score.getMissed() + " words.");
+                                             "\nYou caught " + score.getCaught() + " word(s)." +
+                                             "\nYou missed " + score.getMissed() + " word(s)." +
+                                             "\nYou typed " + score.getIncorrectWords() +
+                                             " word(s) incorrectly");
         resetScore();
-        refreshGUI();
         panel.repaintOnce();
     }
 
-    public void setHalted() {
-        halted = !halted;
+    /**
+     * Sets the paused flag to the opposite of whatever it currently is.
+     */
+    public void setPaused() {
+        paused = !paused;
     }
 
-    public boolean isHalted() {
-        return halted;
+    /**
+     * @return boolean indicating whether or not the game is paused.
+     */
+    public boolean isPaused() {
+        return paused;
+    }
+
+    /**
+     * @return boolean indicating if the game's model has changed.
+     */
+    public boolean isChanged() {
+        return changed;
+    }
+
+    /**
+     * Sets the changed flag to false.
+     */
+    public synchronized void setUnchanged() {
+        changed = false;
+    }
+
+    /**
+     * Sets the changed flag to true.
+     */
+    public synchronized void setChanged() {
+        changed = true;
+    }
+
+    /**
+     * @return boolean indicating if the game is running.
+     */
+    public boolean isRunning() {
+        return running;
     }
 }

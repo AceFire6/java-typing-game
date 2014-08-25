@@ -16,14 +16,24 @@ public class WordApp {
     static int yLimit = 480;
 
     static WordDictionary dict = new WordDictionary();
-            //use default dictionary, to read from file eventually
+    //use default dictionary, to read from file eventually
 
     static WordRecord[] words;
     static volatile boolean done;  //must be volatile
     static Score score = new Score();
 
     static WordPanel w;
+    /**
+     * An array of the JLabels that need to be given
+     * new text when the scores are updated.
+     * They are passed to the wordController so it can
+     * handle their retetxing.
+     */
     static JLabel[] labels;
+    /**
+     * Provides a way for the threads to interact with different objects
+     * safely.
+     */
     static WordController wordController;
 
 
@@ -49,19 +59,26 @@ public class WordApp {
         JLabel caught = new JLabel("Caught: " + score.getCaught() + "    ");
         JLabel missed = new JLabel("Missed:" + score.getMissed() + "    ");
         JLabel scr = new JLabel("Score:" + score.getScore() + "    ");
-        labels = new JLabel[] {caught, missed, scr};
+        JLabel incorrect = new JLabel("Incorrect Attempts:" + score.getIncorrectWords() + "    ");
+        labels = new JLabel[] {caught, missed, scr, incorrect};
         wordController.addLabels(labels);
         txt.add(caught);
         txt.add(missed);
         txt.add(scr);
+        txt.add(incorrect);
 
-        //[snip]
+        //Gets the text entry from the textfield and compares it to the words.
 
         final JTextField textEntry = new JTextField("", 20);
         textEntry.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                String text = textEntry.getText();
-                wordController.checkWord(text);
+                if (!wordController.isPaused() && wordController.isRunning()) {
+                    String text = textEntry.getText();
+                    if (!wordController.checkWord(text)) {
+                        score.inncorrectWord();
+                        wordController.setChanged();
+                    }
+                }
                 textEntry.setText("");
                 textEntry.requestFocus();
             }
@@ -78,38 +95,43 @@ public class WordApp {
         // add the listener to the jbutton to handle the "pressed" event
         startB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //[snip]
-                if (wordController.ended()) {
+                //Starts the panel's run() in a separate thread.
+                if (!wordController.isRunning()) {
                     new Thread(w).start();
-                } else if (wordController.isHalted()) {
-                    wordController.setHalted();
+                } else if (wordController.isPaused()) {
+                    wordController.setPaused();
                 }
                 textEntry.requestFocus();  //return focus to the text entry field
             }
         });
-        JButton haltB = new JButton("Halt");
+        JButton pauseB = new JButton("Pause");
 
         // add the listener to the jbutton to handle the "pressed" event
-        haltB.addActionListener(new ActionListener() {
+        pauseB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //[snip]
-                wordController.setHalted();
+                // If the game is running. Set its state to paused.
+                if (wordController.isRunning()) {
+                    wordController.setPaused();
+                }
+                textEntry.requestFocus();  //return focus to the text entry field
             }
         });
 
-        JButton quitB = new JButton("Quit");
+        JButton resetB = new JButton("Reset");
 
         // add the listener to the jbutton to handle the "pressed" event
-        quitB.addActionListener(new ActionListener() {
+        resetB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //[snip]
-                wordController.haltGame();
+                // Resets the ccurrent game board.
+                if (wordController.isRunning()) {
+                    wordController.endGame();
+                }
             }
         });
 
         b.add(startB);
-        b.add(haltB);
-        b.add(quitB);
+        b.add(pauseB);
+        b.add(resetB);
 
         g.add(b);
 
