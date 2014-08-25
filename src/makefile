@@ -26,7 +26,10 @@ clean:
 	$(RM) *.class
 	
 run:
-	java $(MAIN_CLASS) $(TOTAL_WORDS) $(CONCURRENT_WORDS) ../$(DICT_FILE)
+	java $(MAIN_CLASS) $(TOTAL_WORDS) $(CONCURRENT_WORDS) $(FILE)
 
 run-default:
+	java $(MAIN_CLASS) $(TOTAL_WORDS) $(CONCURRENT_WORDS) ../$(DICT_FILE)
+
+run-no-file:
 	java $(MAIN_CLASS) $(TOTAL_WORDS) $(CONCURRENT_WORDS) None
