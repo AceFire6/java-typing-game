@@ -103,3 +103,6 @@ of the model.
 1. If there are two of the same word on the screen and the player enters the correct text, 
 the word that is closest to the bottom of the screen are removed first, 
 and only one of the words is deleted.
+
+2. A counter of the number of words the player has typed incorrectly so they can more accurately 
+track their performance.
