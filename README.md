@@ -5,9 +5,11 @@
 
 ## Description
 
-A typing game where the player has to type the word and press enter before the word reaches the red rectangle area at the bottom of the screen.
+A typing game where the player has to type the word and press enter before the word reaches the red
+rectangle area at the bottom of the screen.
 
-The aim of the assignment was to explore concurrency and the synchronization and thread safety issues surrounding it.
+The aim of the assignment was to explore concurrency and the synchronization and thread safety
+issues surrounding it.
 
 ## Instructions
 
