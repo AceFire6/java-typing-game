@@ -131,9 +131,23 @@ public class WordApp {
             }
         });
 
+        JButton quitB = new JButton("Quit");
+
+        // add the listener to the jbutton to handle the "pressed" event
+        quitB.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // Resets the ccurrent game board.
+                if (wordController.isRunning()) {
+                    wordController.endGame();
+                }
+                System.exit(0);
+            }
+        });
+
         b.add(startB);
         b.add(pauseB);
         b.add(resetB);
+        b.add(quitB);
 
         g.add(b);
 
