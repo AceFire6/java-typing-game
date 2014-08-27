@@ -39,14 +39,6 @@ public class WordRecord {
         this.y = y;
     }
 
-    public synchronized void setX(int x) {
-        this.x = x;
-    }
-
-    public synchronized void setWord(String text) {
-        this.text = text;
-    }
-
     public synchronized String getWord() {
         return text;
     }
@@ -63,11 +55,6 @@ public class WordRecord {
         return fallingSpeed;
     }
 
-    public synchronized void setPos(int x, int y) {
-        setY(y);
-        setX(x);
-    }
-
     public synchronized void resetPos() {
         setY(0);
     }
@@ -77,12 +64,9 @@ public class WordRecord {
         text = dict.getNewWord();
         missed = false;
         setFallingSpeed();
-        //System.out.println(getWord() + " falling speed = " + getSpeed());
-
     }
 
     public synchronized boolean matchWord(String typedText) {
-        //System.out.println("Matching against: "+text);
         if (typedText.equals(this.text)) {
             resetWord();
             return true;

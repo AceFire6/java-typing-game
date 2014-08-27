@@ -104,6 +104,7 @@ public class WordApp {
                 textEntry.requestFocus();  //return focus to the text entry field
             }
         });
+
         JButton pauseB = new JButton("Pause");
 
         // add the listener to the jbutton to handle the "pressed" event
@@ -113,6 +114,7 @@ public class WordApp {
                 if (wordController.isRunning()) {
                     wordController.setPaused();
                 }
+                textEntry.setText("");
                 textEntry.requestFocus();  //return focus to the text entry field
             }
         });

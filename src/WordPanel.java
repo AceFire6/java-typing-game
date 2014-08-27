@@ -22,8 +22,6 @@ public class WordPanel extends JPanel implements Runnable {
         for (int i = 0; i < noWords; i++) {
             // Some words stuck out.
             g.drawString(words[i].getWord(), words[i].getX(), words[i].getY() - 5);
-            //            g.drawString(words[i].getWord(),words[i].getX(),
-            // words[i].getY()+20);  //y-offset for skeleton so that you can see the words
         }
 
     }
