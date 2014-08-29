@@ -7,11 +7,7 @@ import java.util.Comparator;
  * Student Number: MLLJET001
  */
 public class WordController {
-    private Score score;
-    private WordPanel panel;
     private WordThread[] wordThreads;
-    private WordRecord[] words;
-    private JLabel[] labels;
 
     /**
      * Whether or not the game has finished.
@@ -29,25 +25,10 @@ public class WordController {
      * Whether or not the game is running.
      */
     private volatile boolean running;
-    /**
-     * The maximum number of words allowed to fall.
-     */
-    private int maxWords;
 
-
-    /**
-     * Parametrized constructor
-     *
-     * @param maxWords The maximum number of words allowed to fall.
-     * @param score    The score object that keeps the scores.
-     * @param words    WordRecord[] that holds all the words on screen.
-     */
-    public WordController(int maxWords, Score score, WordRecord[] words) {
+    public WordController() {
         super();
-        this.score = score;
-        this.words = words;
-        this.wordThreads = new WordThread[words.length];
-        this.maxWords = maxWords;
+        this.wordThreads = new WordThread[WordApp.words.length];
         ended = true;
         paused = false;
         running = false;
@@ -57,10 +38,10 @@ public class WordController {
      * Updates the score labels on the WordPanel with the updated scores.
      */
     public synchronized void updateScoreLabels() {
-        labels[0].setText("Caught: " + score.getCaught() + "    ");
-        labels[1].setText("Missed:" + score.getMissed() + "    ");
-        labels[2].setText("Score:" + score.getScore() + "    ");
-        labels[3].setText("Incorrect Words:" + score.getIncorrectWords() + "    ");
+        WordApp.labels[0].setText("Caught: " + WordApp.score.getCaught() + "    ");
+        WordApp.labels[1].setText("Missed:" + WordApp.score.getMissed() + "    ");
+        WordApp.labels[2].setText("Score:" + WordApp.score.getScore() + "    ");
+        WordApp.labels[3].setText("Incorrect Words:" + WordApp.score.getIncorrectWords() + "    ");
         setChanged();
     }
 
@@ -71,7 +52,7 @@ public class WordController {
      * @return boolean Whether or not the word matched.
      */
     public synchronized boolean checkWord(String text) {
-        Arrays.sort(words, new Comparator<WordRecord>() {
+        Arrays.sort(WordApp.words, new Comparator<WordRecord>() {
             @Override
             public int compare(WordRecord o1, WordRecord o2) {
                 if (o1.equals(o2)) {
@@ -84,11 +65,11 @@ public class WordController {
             }
         });
 
-        for (WordRecord word : words) {
+        for (WordRecord word : WordApp.words) {
             if (word.matchWord(text)) {
-                score.caughtWord(text.length());
+                WordApp.score.caughtWord(text.length());
                 updateScoreLabels();
-                if (score.getCaught() >= maxWords) {
+                if (WordApp.score.getCaught() >= WordApp.totalWords) {
                     winGame();
                 }
                 return true;
@@ -104,7 +85,7 @@ public class WordController {
         ended = false;
         running = true;
         int index = 0;
-        for (WordRecord word : words) {
+        for (WordRecord word : WordApp.words) {
             wordThreads[index] = new WordThread(word, this);
             new Thread(wordThreads[index]).start();
             index++;
@@ -115,20 +96,20 @@ public class WordController {
      * Increments the missed word count and detects if it's gone over the limit.
      */
     public synchronized void missedWord() {
-        score.missedWord();
+        WordApp.score.missedWord();
         updateScoreLabels();
-        if (score.getMissed() >= 10) {
+        if (WordApp.score.getMissed() >= 10) {
             stopGame();
             setChanged();
-            JOptionPane.showMessageDialog(panel, "Game Over!\n" +
-                                                 "Your score was: " + score.getScore() +
-                                                 "\nYou caught " + score.getCaught() + " word(s)." +
-                                                 "\nYou missed " + score.getMissed() + " word(s)." +
-                                                 "\nYou typed " + score.getIncorrectWords() +
+            JOptionPane.showMessageDialog(WordApp.w, "Game Over!\n" +
+                                                 "Your score was: " + WordApp.score.getScore() +
+                                                 "\nYou caught " + WordApp.score.getCaught() + " word(s)." +
+                                                 "\nYou missed " + WordApp.score.getMissed() + " word(s)." +
+                                                 "\nYou typed " + WordApp.score.getIncorrectWords() +
                                                  " word(s) incorrectly");
 
             resetScore();
-            panel.repaintOnce();
+            WordApp.w.repaintOnce();
         }
     }
 
@@ -136,26 +117,8 @@ public class WordController {
      * Resets the scores in the Score object.
      */
     public void resetScore() {
-        score.resetScore();
+        WordApp.score.resetScore();
         updateScoreLabels();
-    }
-
-    /**
-     * Adds the JLabel objects to this.
-     *
-     * @param labels The JLabels to be added to this.
-     */
-    public void addLabels(JLabel[] labels) {
-        this.labels = labels;
-    }
-
-    /**
-     * Adds the JPanel to this.
-     *
-     * @param panel JPanel to be added to this.
-     */
-    public void addPanel(WordPanel panel) {
-        this.panel = panel;
     }
 
     /**
@@ -175,7 +138,7 @@ public class WordController {
     public void endGame() {
         stopGame();
         resetScore();
-        panel.repaintOnce();
+        WordApp.w.repaintOnce();
     }
 
     /**
@@ -192,14 +155,14 @@ public class WordController {
     public void winGame() {
         stopGame();
         setChanged();
-        JOptionPane.showMessageDialog(panel, "You've won!\n" +
-                                             "Your score was: " + score.getScore() +
-                                             "\nYou caught " + score.getCaught() + " word(s)." +
-                                             "\nYou missed " + score.getMissed() + " word(s)." +
-                                             "\nYou typed " + score.getIncorrectWords() +
+        JOptionPane.showMessageDialog(WordApp.w, "You've won!\n" +
+                                             "Your score was: " + WordApp.score.getScore() +
+                                             "\nYou caught " + WordApp.score.getCaught() + " word(s)." +
+                                             "\nYou missed " + WordApp.score.getMissed() + " word(s)." +
+                                             "\nYou typed " + WordApp.score.getIncorrectWords() +
                                              " word(s) incorrectly");
         resetScore();
-        panel.repaintOnce();
+        WordApp.w.repaintOnce();
     }
 
     /**

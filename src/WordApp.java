@@ -49,7 +49,6 @@ public class WordApp {
 
 
         w = new WordPanel(words, yLimit, wordController);
-        wordController.addPanel(w);
         w.setSize(frameX, yLimit + 100);
         g.add(w);
 
@@ -61,7 +60,6 @@ public class WordApp {
         JLabel scr = new JLabel("Score:" + score.getScore() + "    ");
         JLabel incorrect = new JLabel("Incorrect Attempts:" + score.getIncorrectWords() + "    ");
         labels = new JLabel[] {caught, missed, scr, incorrect};
-        wordController.addLabels(labels);
         txt.add(caught);
         txt.add(missed);
         txt.add(scr);
@@ -204,7 +202,7 @@ public class WordApp {
         for (int i = 0; i < noWords; i++) {
             words[i] = new WordRecord(dict.getNewWord(), i * x_inc, yLimit);
         }
-        wordController = new WordController(totalWords, score, words);
+        wordController = new WordController();
 
         setupGUI(frameX, frameY, yLimit);
         //Start WordPanel thread - for redrawing animation
