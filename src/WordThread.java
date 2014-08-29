@@ -24,7 +24,7 @@ public class WordThread implements Runnable {
     /**
      * Resets the current word.
      */
-    public synchronized void stop() {
+    public synchronized void reset() {
         word.resetWord();
     }
 

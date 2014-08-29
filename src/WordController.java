@@ -26,6 +26,8 @@ public class WordController {
      */
     private volatile boolean running;
 
+    private final Object labelLock = new Object();
+
     public WordController() {
         super();
         this.wordThreads = new WordThread[WordApp.words.length];
@@ -37,12 +39,15 @@ public class WordController {
     /**
      * Updates the score labels on the WordPanel with the updated scores.
      */
-    public synchronized void updateScoreLabels() {
-        WordApp.labels[0].setText("Caught: " + WordApp.score.getCaught() + "    ");
-        WordApp.labels[1].setText("Missed:" + WordApp.score.getMissed() + "    ");
-        WordApp.labels[2].setText("Score:" + WordApp.score.getScore() + "    ");
-        WordApp.labels[3].setText("Incorrect Words:" + WordApp.score.getIncorrectWords() + "    ");
-        setChanged();
+    public void updateScoreLabels() {
+        synchronized (labelLock) {
+            WordApp.labels[0].setText("Caught: " + WordApp.score.getCaught() + "    ");
+            WordApp.labels[1].setText("Missed:" + WordApp.score.getMissed() + "    ");
+            WordApp.labels[2].setText("Score:" + WordApp.score.getScore() + "    ");
+            WordApp.labels[3].setText(
+                    "Incorrect Words:" + WordApp.score.getIncorrectWords() + "    ");
+            setChanged();
+        }
     }
 
     /**
@@ -126,7 +131,7 @@ public class WordController {
      */
     public void stopGame() {
         for (WordThread wordThread : wordThreads) {
-            wordThread.stop();
+            wordThread.reset();
         }
         ended = true;
         running = false;
