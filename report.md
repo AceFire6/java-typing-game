@@ -106,3 +106,5 @@ and only one of the words is deleted.
 
 2. A counter of the number of words the player has typed incorrectly so they can more accurately 
 track their performance.
+
+3. Pause button for when the player doesn't want to end the game but wants to take a break.
